@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Python Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .options button {
+      background-color: #eee;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      border-radius: 5px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .options button.correct {
+      background-color: #a8e6a3 !important;
+    }
+    .options button.wrong {
+      background-color: #f59d9d !important;
+    }
+    .reason {
+      margin-top: 10px;
+      font-style: italic;
+      color: #333;
+    }
+
+    .result-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      text-align: center;
+      margin-top: 50px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .result-container h2 {
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+
+    .result-container .score {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .home-btn {
+      background-color: #0066CC;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .home-btn:hover {
+      background-color: #0052a3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Python MCQ Quiz</h1>
+  <div id="quiz"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang') || 'en';
+
+    const questions = {
+     en: [
+    { q: "Which loop is used when the number of iterations is not known?", options: ["for", "while", "do-while", "loop"], correct: 1, reason: "'while' is used when the number of iterations is unknown." },
+    { q: "What is the output of bool(0)?", options: ["True", "False", "0", "None"], correct: 1, reason: "bool(0) returns False." },
+    { q: "Which of the following is not a keyword?", options: ["elif", "assert", "lambda", "eval"], correct: 3, reason: "'eval' is a built-in function, not a keyword." },
+    { q: "How do you create a dictionary?", options: ["{}", "[]", "()", "<>"], correct: 0, reason: "Dictionaries are created using curly braces {}." },
+    { q: "Which method adds an item to a list?", options: ["append()", "add()", "insert()", "push()"], correct: 0, reason: "'append()' adds an item to the end of the list." },
+    { q: "What is the output of type(10.0)?", options: ["int", "float", "double", "decimal"], correct: 1, reason: "10.0 is a float." },
+    { q: "Which function converts a string to an integer?", options: ["str()", "int()", "float()", "chr()"], correct: 1, reason: "'int()' converts a string or float to integer." },
+    { q: "What does 'break' do in loops?", options: ["Skips iteration", "Ends loop", "Pauses loop", "Repeats loop"], correct: 1, reason: "'break' exits the loop immediately." },
+    { q: "How to define a class in Python?", options: ["function", "def", "class", "type"], correct: 2, reason: "Classes are defined using the 'class' keyword." },
+    { q: "Which function is used to get user input?", options: ["input()", "get()", "read()", "scan()"], correct: 0, reason: "'input()' is used to take user input." },
+    { q: "What is the default return value of a function?", options: ["None", "0", "False", "Empty string"], correct: 0, reason: "Functions return None by default if not specified." },
+    { q: "Which of the following is a valid variable name?", options: ["2value", "value_2", "value-2", "@value"], correct: 1, reason: "Variable names can't start with numbers or special characters except _." },
+    { q: "What is indentation used for in Python?", options: ["Style", "Loops", "Functions", "Block definition"], correct: 3, reason: "Indentation defines blocks of code in Python." },
+    { q: "Which of the following is a set method?", options: ["add()", "append()", "extend()", "insert()"], correct: 0, reason: "Sets use 'add()' to include new elements." },
+    { q: "What will 10//3 return?", options: ["3.33", "3", "4", "3.0"], correct: 1, reason: "'//' is floor division which returns integer result." },
+    { q: "Which is not a valid Python data structure?", options: ["list", "dictionary", "array", "set"], correct: 2, reason: "'array' is not a built-in Python structure (use list/tuple/set)." },
+    { q: "Which function returns the ASCII of a character?", options: ["ord()", "ascii()", "char()", "code()"], correct: 0, reason: "'ord()' gives ASCII value." },
+    { q: "What does the 'is' keyword check?", options: ["Equality", "Identity", "Similarity", "Assignment"], correct: 1, reason: "'is' checks whether two variables point to the same object." },
+    { q: "What is a correct file mode for writing in Python?", options: ["'r'", "'w'", "'rw'", "'wr'"], correct: 1, reason: "'w' mode is used to write to a file." },
+    { q: "Which module is used for regular expressions?", options: ["re", "regex", "regexp", "string"], correct: 0, reason: "The 're' module is used for regex operations in Python." },
+    { q: "Which operator checks for membership?", options: ["is", "in", "==", "!="], correct: 1, reason: "'in' is used to check for membership." },
+    { q: "Which keyword is used to inherit a class?", options: ["inherits", "extends", "super", "class"], correct: 3, reason: "Python uses the 'class' syntax with parameters to inherit." },
+    { q: "How do you install packages in Python?", options: ["python install", "pip install", "setup install", "pkg install"], correct: 1, reason: "'pip install' is used to add packages." },
+    { q: "Which function can be used to convert list to tuple?", options: ["tuple()", "list()", "convert()", "array()"], correct: 0, reason: "'tuple()' converts a list to tuple." },
+    { q: "Which keyword is used to define anonymous functions?", options: ["lambda", "anon", "func", "def"], correct: 0, reason: "Anonymous functions are declared using 'lambda'." },
+    { q: "Which of these is a correct way to start a comment?", options: ["--", "#", "//", "!!"], correct: 1, reason: "'#' is the syntax for comments." },
+    { q: "Which of these is used to handle final cleanup code?", options: ["finally", "except", "end", "cleanup"], correct: 0, reason: "'finally' is executed after try-except." },
+    { q: "What will print(type([])) return?", options: ["<class 'list'>", "<type 'list'>", "list", "type"], correct: 0, reason: "[] is a list object." },
+    { q: "What is the index of first element in a list?", options: ["1", "0", "-1", "None"], correct: 1, reason: "Python lists are 0-indexed." },
+    { q: "Which function is used to find the largest item?", options: ["max()", "largest()", "biggest()", "top()"], correct: 0, reason: "'max()' returns the largest value." }
+  ],
+
+  kn: [
+    { q: "ಪುನರಾವರ್ತನೆಯ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿದಿಲ್ಲದಿದ್ದಾಗ ಯಾವ ಲೂಪ್ ಬಳಸಲಾಗುತ್ತದೆ?", options: ["for", "while", "do-while", "loop"], correct: 1, reason: "'while' ಲೂಪ್ ಅನ್ನು ಅನಿಶ್ಚಿತ ಪುನರಾವರ್ತನೆಗಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ." },
+    { q: "bool(0) ಏನು ಹಿಂದಿರುಗಿಸುತ್ತದೆ?", options: ["True", "False", "0", "None"], correct: 1, reason: "bool(0) ಫಲಿತಾಂಶ False ಆಗಿರುತ್ತದೆ." },
+    { q: "ಕೆಳಗಿನ ಯಾವದು ಕೀವರ್ಡ್ ಅಲ್ಲ?", options: ["elif", "assert", "lambda", "eval"], correct: 3, reason: "'eval' ಒಂದು ಫಂಕ್ಷನ್, ಕೀವರ್ಡ್ ಅಲ್ಲ." },
+    { q: "ಡಿಕ್ಷನರಿ ಹೇಗೆ ರಚಿಸುತ್ತಾರೆ?", options: ["{}", "[]", "()", "<>"], correct: 0, reason: "ಡಿಕ್ಷನರಿಗಳು {} ಬಳಸಿ ರಚಿಸಲಾಗುತ್ತದೆ." },
+    { q: "ಪಟ್ಟಿಗೆ ಐಟಂ ಸೇರಿಸಲು ಯಾವ ಮೆಥಡ್?", options: ["append()", "add()", "insert()", "push()"], correct: 0, reason: "'append()' ಪಟ್ಟಿ ಕೊನೆಯಲ್ಲಿ ಐಟಂ ಸೇರಿಸುತ್ತದೆ." },
+    { q: "type(10.0) ಫಲಿತಾಂಶ ಏನು?", options: ["int", "float", "double", "decimal"], correct: 1, reason: "10.0 ಒಂದು float ಆಗಿದೆ." },
+    { q: "ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ಪೂರ್ಣಾಂಕಕ್ಕೆ ಪರಿವರ್ತಿಸಲು ಯಾವ ಫಂಕ್ಷನ್?", options: ["str()", "int()", "float()", "chr()"], correct: 1, reason: "'int()' ಸ್ಟ್ರಿಂಗ್ ಅಥವಾ float ಅನ್ನು ಪೂರ್ಣಾಂಕಕ್ಕೆ ಪರಿವರ್ತಿಸುತ್ತದೆ." },
+    { q: "'break' ಲೂಪಿನಲ್ಲಿ ಏನು ಮಾಡುತ್ತದೆ?", options: ["ಸೈಕಲ್ ಎಡವುತ್ತದೆ", "ಲೂಪ್ ನಿಲ್ಲಿಸುತ್ತದೆ", "ಲೂಪ್ ನಿಲ್ಲಿಸಿ ಮುಂದುವರೆಯುತ್ತದೆ", "ಪುನರಾವರ್ತಿಸುತ್ತದೆ"], correct: 1, reason: "'break' ಲೂಪ್ ಅನ್ನು ತಕ್ಷಣ ನಿಲ್ಲಿಸುತ್ತದೆ." },
+    { q: "Python ನಲ್ಲಿ ವರ್ಗವನ್ನು ಹೇಗೆ ನಿರೂಪಿಸುತ್ತಾರೆ?", options: ["function", "def", "class", "type"], correct: 2, reason: "'class' ಕೀವರ್ಡ್ ಬಳಸಿ ವರ್ಗವನ್ನು ನಿರೂಪಿಸುತ್ತಾರೆ." },
+    { q: "ಬಳಕೆದಾರರ ಇನ್‌ಪುಟ್ ಪಡೆಯಲು ಯಾವ ಫಂಕ್ಷನ್?", options: ["input()", "get()", "read()", "scan()"], correct: 0, reason: "'input()' ಬಳಕೆದಾರರ ಇನ್‌ಪುಟ್ ಪಡೆಯುತ್ತದೆ." },
+    { q: "ಡಿಫಾಲ್ಟ್ ರಿಟರ್ನ್ ವ್ಯಾಲ್ಯೂ ಏನು?", options: ["None", "0", "False", "ಖಾಲಿ ಸ್ಟ್ರಿಂಗ್"], correct: 0, reason: "ಫಂಕ್ಷನ್‌ನಲ್ಲಿ ಏನೂ ಮರಳಿ ನೀಡದಿದ್ದರೆ ಅದು None ಆಗಿರುತ್ತದೆ." },
+    { q: "ಸರಿಯಾದ ವೆರಿಯಬಲ್ ಹೆಸರು ಯಾವದು?", options: ["2value", "value_2", "value-2", "@value"], correct: 1, reason: "ವೆರಿಯಬಲ್ ಹೆಸರು ಸಂಖ್ಯೆ ಅಥವಾ ವಿಶೇಷ ಚಿಹ್ನೆಯಿಂದ ಆರಂಭವಾಗಬಾರದು." },
+    { q: "Python ನಲ್ಲಿ indent ಏಕೆ ಉಪಯೋಗಿಸುತ್ತಾರೆ?", options: ["ಶೈಲಿ", "ಲೂಪು", "ಫಂಕ್ಷನ್", "ಬ್ಲಾಕ್ ವ್ಯಾಖ್ಯಾನ"], correct: 3, reason: "Python ನಲ್ಲಿ indent ಬ್ಲಾಕ್ ಅನ್ನು ಸೂಚಿಸುತ್ತದೆ." },
+    { q: "set ನಲ್ಲಿ ಐಟಂ ಸೇರಿಸಲು ಯಾವ ಮೆಥಡ್?", options: ["add()", "append()", "extend()", "insert()"], correct: 0, reason: "'add()' ಅನ್ನು set ಗೆ ಐಟಂ ಸೇರಿಸಲು ಉಪಯೋಗಿಸುತ್ತಾರೆ." },
+    { q: "10//3 ಫಲಿತಾಂಶ ಏನು?", options: ["3.33", "3", "4", "3.0"], correct: 1, reason: "'//' floor division ಆಗಿದ್ದು ಪೂರ್ಣಾಂಕ ನೀಡುತ್ತದೆ." },
+    { q: "Python ನಲ್ಲಿ ಮಾನ್ಯವಲ್ಲದ ಡೇಟಾ ಸಂರಚನೆ ಯಾವದು?", options: ["list", "dictionary", "array", "set"], correct: 2, reason: "'array' Python ನ್ನಲ್ಲಿ ಡಿಫಾಲ್ಟ್ ಆಗಿಲ್ಲ." },
+    { q: "ಅಕ್ಷರದ ASCII ಪಡೆಯಲು ಯಾವ ಫಂಕ್ಷನ್?", options: ["ord()", "ascii()", "char()", "code()"], correct: 0, reason: "'ord()' ASCII ಮೌಲ್ಯ ನೀಡುತ್ತದೆ." },
+    { q: "'is' ಕೀವರ್ಡ್ ಏನು ಪರಿಶೀಲಿಸುತ್ತದೆ?", options: ["ಸಮಾನತೆ", "ಒಳರಚನೆ", "ಸಾಧೃಶ್ಯ", "ಅಸೈನ್‌ಮೆಂಟ್"], correct: 1, reason: "'is' ಎರಡು ವಸ್ತುಗಳು ಒಂದೇ ಎಂದು ಪರಿಶೀಲಿಸುತ್ತದೆ." },
+    { q: "ಲೇಖನ ಬರೆಯಲು ಸರಿಯಾದ ಫೈಲ್ ಮೋಡ್ ಯಾವದು?", options: ["'r'", "'w'", "'rw'", "'wr'"], correct: 1, reason: "'w' ಅನ್ನು ಬರೆಯಲು ಬಳಸಲಾಗುತ್ತದೆ." },
+    { q: "regex ಗಾಗಿ ಯಾವ ಮಾಸೂಲೆ ಬಳಕೆ?", options: ["re", "regex", "regexp", "string"], correct: 0, reason: "'re' ಮಾಸೂಲೆ regex ಕಾರ್ಯಗಳಿಗೆ ಉಪಯೋಗಿಸುತ್ತದೆ." },
+    { q: "ಸದೆಪಡುವಿಕೆಗೆ ಯಾವ operator?", options: ["is", "in", "==", "!="], correct: 1, reason: "'in' ಉಪಯೋಗಿಸಿ ಚಿಂದಿಯನ್ನು ಪರಿಶೀಲಿಸಬಹುದು." },
+    { q: "ವರ್ಗವನ್ನು ವರ್ಗಸಂಪತ್ತಿಯಿಂದ ಉತ್ಪತ್ತಿ ಮಾಡಲು ಯಾವ ಪದ?", options: ["inherits", "extends", "super", "class"], correct: 3, reason: "'class' ಎಂಬ ಪದ ಉಪವರ್ಗ ನಿರೂಪಣೆಗೆ ಬಳಸಲಾಗುತ್ತದೆ." },
+    { q: "Python ನಲ್ಲಿ ಪ್ಯಾಕೇಜ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು?", options: ["python install", "pip install", "setup install", "pkg install"], correct: 1, reason: "'pip install' ಪ್ಯಾಕೇಜ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಉಪಯೋಗಿಸುತ್ತಾರೆ." },
+    { q: "ಪಟ್ಟಿಯನ್ನು tuple ಗೆ ಪರಿವರ್ತಿಸಲು ಯಾವ ಫಂಕ್ಷನ್?", options: ["tuple()", "list()", "convert()", "array()"], correct: 0, reason: "'tuple()' ಪಟ್ಟಿಯನ್ನು tuple ಗೆ ಪರಿವರ್ತಿಸುತ್ತದೆ." },
+    { q: "ಅಜ್ಞಾತ ಫಂಕ್ಷನ್ ಗೆ ಯಾವ ಕೀವರ್ಡ್?", options: ["lambda", "anon", "func", "def"], correct: 0, reason: "'lambda' ಅಜ್ಞಾತ ಫಂಕ್ಷನ್ ಅನ್ನು ಸೂಚಿಸುತ್ತದೆ." },
+    { q: "ಕಾಮೆಂಟ್ ಆರಂಭಿಸಲು ಸರಿಯಾದ ಚಿಹ್ನೆ ಯಾವದು?", options: ["--", "#", "//", "!!"], correct: 1, reason: "'#' ಉಪಯೋಗಿಸಿ ಕಾಮೆಂಟ್ ಹಾಕಲಾಗುತ್ತದೆ." },
+    { q: "ಅಂತಿಮ ಶುದ್ಧೀಕರಣಕ್ಕೆ ಯಾವ ಕೀವರ್ಡ್?", options: ["finally", "except", "end", "cleanup"], correct: 0, reason: "'finally' ಬ್ಲಾಕ್ try-except ಬಳಿಕ ಕಾರ್ಯಗತವಾಗುತ್ತದೆ." },
+    { q: "print(type([])) ಏನು ಮುದ್ರಿಸುತ್ತದೆ?", options: ["<class 'list'>", "<type 'list'>", "list", "type"], correct: 0, reason: "[] ಒಂದು ಪಟ್ಟಿ ಆಗಿದ್ದು 'list' ವರ್ಗವನ್ನು ಸೂಚಿಸುತ್ತದೆ." },
+    { q: "ಪಟ್ಟಿಯ ಮೊದಲ ಐಟಂಗೆ ಸೂಚಿ ಯಾವದು?", options: ["1", "0", "-1", "None"], correct: 1, reason: "Python ಪಟ್ಟಿಗಳು 0 ರಿಂದ ಆರಂಭವಾಗುತ್ತವೆ." },
+    { q: "ಗರಿಷ್ಠ ಮೌಲ್ಯ ಪಡೆಯಲು ಯಾವ ಫಂಕ್ಷನ್?", options: ["max()", "largest()", "biggest()", "top()"], correct: 0, reason: "'max()' ಗರಿಷ್ಠ ಮೌಲ್ಯ ನೀಡುತ್ತದೆ." }
+  ]
+    };
+
+    let currentQuiz = [];
+    let questionIndex = 0;
+    let score = 0;
+
+    function escapeHTML(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function showQuestion() {
+      const q = currentQuiz[questionIndex];
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = `
+        <div class="question">${questionIndex + 1}. ${q.q}</div>
+        <div class="options">
+          ${q.options.map((opt, i) =>
+            `<button onclick="selectOption(${i}, ${q.correct}, '${escapeHTML(q.reason)}', this)">${opt}</button>`
+          ).join('')}
+        </div>
+        <div class="reason" id="reason"></div>
+      `;
+    }
+
+    function selectOption(selected, correct, reason, btn) {
+      const buttons = document.querySelectorAll('.options button');
+      buttons.forEach(b => b.disabled = true);
+
+      if (selected === correct) {
+        btn.classList.add('correct');
+        score++;
+      } else {
+        btn.classList.add('wrong');
+        buttons[correct].classList.add('correct');
+      }
+
+      document.getElementById('reason').innerText = reason;
+
+      setTimeout(() => {
+        questionIndex++;
+        if (questionIndex < currentQuiz.length) {
+          showQuestion();
+        } else {
+          document.getElementById('quiz').innerHTML = `
+            <div class="result-container">
+              <h2>🎉 Quiz Completed</h2>
+              <p class="score">Your Score: <strong>${score} / ${currentQuiz.length}</strong></p>
+              <button class="home-btn" onclick="location.href='/'">🏠 Go Home</button>
+            </div>
+          `;
+        }
+      }, 2000);
+    }
+
+    function startQuiz() {
+      currentQuiz = [...questions[lang]].sort(() => Math.random() - 0.5).slice(0, 10);
+      questionIndex = 0;
+      score = 0;
+      showQuestion();
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>

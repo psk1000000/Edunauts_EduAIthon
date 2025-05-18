@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Time Complexity Analyzer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    textarea, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    textarea {
+      height: 200px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .output-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    #result {
+      width: 48%;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 400px;
+      position: relative;
+    }
+
+    .lang-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    #chart-container {
+      width: 48%;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+  <h2>Time Complexity Analyzer</h2>
+
+  <textarea id="codeInput" placeholder="Paste your Python code here..."></textarea>
+  <button onclick="analyzeCode()">Analyze</button>
+
+  <div class="output-container">
+    <div id="result">
+      <div class="lang-buttons">
+        <button onclick="setLanguage('en'); analyzeCode();">English</button>
+        <button onclick="setLanguage('kn'); analyzeCode();">Kannada</button>
+      </div>
+      <div id="explanationText" style="margin-top: 40px;"></div>
+    </div>
+    <div id="chart-container">
+      <canvas id="complexityChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let currentLanguage = 'en';
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+    }
+
+    async function analyzeCode() {
+      const code = document.getElementById("codeInput").value;
+      const explanationDiv = document.getElementById("explanationText");
+      explanationDiv.innerHTML = "<b>Analyzing...</b>";
+
+      const response = await fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code })
+      });
+
+      const data = await response.json();
+
+      if (currentLanguage === "en") {
+        // Show English explanation only
+        let englishExplanation = `<strong>Confidence:</strong> ${data.confidence * 100}%<br><br>${data.explanation.replace(/\n/g, "<br>")}`;
+        explanationDiv.innerHTML = englishExplanation;
+
+      } else if (currentLanguage === "kn") {
+        // Show "Translating..." message while fetching Kannada translation
+        explanationDiv.innerHTML = "<em>Translating to Kannada...</em>";
+
+        try {
+          const transResponse = await fetch("/translate-explanation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: data.explanation, targetLang: "kn" })
+          });
+
+          const transData = await transResponse.json();
+
+          // Show only Kannada translation (no English explanation)
+          explanationDiv.innerHTML = `<strong>ಕನ್ನಡದಲ್ಲಿ ವಿವರಣೆ:</strong><br>${transData.translated.replace(/\n/g, "<br>")}`;
+
+        } catch (err) {
+          explanationDiv.innerHTML = "<span style='color:red;'>Error translating to Kannada.</span>";
+          console.error("Translation error:", err);
+        }
+      }
+
+      drawChart(data.complexity, data.confidence);
+    }
+
+    function drawChart(complexity, confidence = null) {
+      const ctx = document.getElementById('complexityChart').getContext('2d');
+
+      const complexities = {
+        "O(1)": n => 1,
+        "O(log n)": n => Math.log2(n),
+        "O(n)": n => n,
+        "O(n log n)": n => n * Math.log2(n),
+        "O(n^2)": n => n * n,
+        "O(n^3)": n => n * n * n,
+        "O(2^n)": n => Math.pow(2, n)
+      };
+
+      const nValues = Array.from({ length: 10 }, (_, i) => i + 1);
+      const yValues = complexities[complexity]
+        ? nValues.map(n => complexities[complexity](n))
+        : Array(nValues.length).fill(0);
+
+      if (window.chartInstance) {
+        window.chartInstance.destroy();
+      }
+
+      window.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: nValues,
+          datasets: [{
+            label: complexity,
+            data: yValues,
+            fill: false,
+            borderColor: 'blue',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Time Complexity: ${complexity} (Confidence: ${confidence ? confidence * 100 + "%" : "N/A"})`
+            }
+          },
+          maintainAspectRatio: false
+        }
+      });
+    }
+  </script>
+</body>
+</html>

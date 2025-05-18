@@ -6,7 +6,7 @@
 
 **Kannada Code Tutor** is a web-based educational platform designed to teach Python programming in **Kannada**. It addresses the linguistic and digital divide by enabling students—especially from rural areas—to learn coding using their native language. Through speech or typed Kannada input, users can generate Python code, analyze time complexity, and test their understanding with interactive quizzes.
 
----
+----
 
 ## 🌟 Key Features
 
